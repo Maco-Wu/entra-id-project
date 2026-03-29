@@ -1,0 +1,17 @@
+// Rule: Privileged Role Assigned
+// Severity: High
+// Description: Alerts when a user is added to a privileged admin role
+
+AuditLogs
+| where TimeGenerated > ago(1h)
+| where OperationName == "Add member to role"
+| where Result == "success"
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend RoleName = tostring(TargetResources[0].displayName)
+| where RoleName in (
+    "Global Administrator",
+    "Security Administrator",
+    "Privileged Role Administrator",
+    "User Access Administrator"
+  )
+| project TimeGenerated, InitiatedBy, TargetUser, RoleName

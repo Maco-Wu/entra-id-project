@@ -1,0 +1,10 @@
+// Rule: Brute Force Sign-in Attempt
+// Severity: High
+// Description: Detects 5+ failed sign-ins from same IP within 10 minutes
+
+SigninLogs
+| where TimeGenerated > ago(10m)
+| where ResultType != "0"
+| summarize FailedAttempts = count() by UserPrincipalName, IPAddress, bin(TimeGenerated, 10m)
+| where FailedAttempts >= 5
+| project TimeGenerated, UserPrincipalName, IPAddress, FailedAttempts

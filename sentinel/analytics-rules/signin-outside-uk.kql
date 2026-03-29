@@ -1,0 +1,11 @@
+// Rule: Sign-in From Outside UK
+// Severity: Medium
+// Description: Detects successful sign-ins from non-UK locations
+
+SigninLogs
+| where TimeGenerated > ago(1h)
+| where ResultType == "0"
+| where Location != "GB"
+| where Location != ""
+| project TimeGenerated, UserPrincipalName,
+          Location, IPAddress, AppDisplayName
